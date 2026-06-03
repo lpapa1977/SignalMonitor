@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Señal Móvil</string>
+    <string name="starting">Iniciando…</string>
+    <string name="listening">Escuchando la señal…</string>
+    <string name="permission_required">Se necesita permiso de teléfono/ubicación para leer la señal.</string>
+    <string name="no_wifi">Sin conexión WiFi</string>
+    <string name="no_detail">Sin detalle disponible</string>
+
+    <string name="mode_mobile">Móvil</string>
+    <string name="mode_wifi">WiFi</string>
+
+    <string name="dbm_placeholder">— dBm</string>
+    <string name="dbm_format">%1$d dBm</string>
+    <string name="level_format">Nivel: %1$d/4 (%2$s)</string>
+    <string name="network_format">Red: %1$s</string>
+    <string name="wifi_ssid_format">Red: %1$s</string>
+
+    <string name="sim_label">SIM:</string>
+    <string name="interval_label">Intervalo:</string>
+    <string name="export_csv">Exportar CSV</string>
+    <string name="export_share">Compartir lecturas CSV</string>
+    <string name="export_empty">Aún no hay lecturas para exportar</string>
+    <string name="export_done">Exportadas %1$d lecturas</string>
+
+    <string name="level_none">sin señal</string>
+    <string name="level_poor">mala</string>
+    <string name="level_moderate">regular</string>
+    <string name="level_good">buena</string>
+    <string name="level_great">excelente</string>
+</resources>
