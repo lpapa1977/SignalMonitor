@@ -40,7 +40,7 @@ La app **no está en Google Play** (se distribuye como APK). Es un *debug build*
 con la clave de depuración; perfecto para uso personal.
 
 ### Opción A — Instalar la APK ya compilada (la más simple)
-1. Descargá el APK: **[`dist/signalmonitor-1.0.apk`](dist/signalmonitor-1.0.apk)**
+1. Descargá el APK: **[`dist/signalmonitor-1.1.apk`](dist/signalmonitor-1.1.apk)**
    (desde el teléfono, abrí el repo en el navegador → entrá al archivo → **Download**).
 2. Pasalo al teléfono si lo bajaste en la PC (cable USB, Google Drive, Telegram, etc.).
 3. Abrilo con el explorador de archivos → Android pedirá habilitar
@@ -70,7 +70,7 @@ CSV solo se comparte si vos tocás **Exportar CSV**.
 
 ## 🧰 Detalles técnicos
 - **Lenguaje:** Kotlin · **UI:** XML + View Binding · vista de gráfico propia (`GraphView`).
-- **minSdk 29** · **targetSdk 34** · `applicationId = com.lpapa.signalmonitor` · versión 1.0.
+- **minSdk 29** · **targetSdk 34** · `applicationId = com.lpapa.signalmonitor` · versión 1.1.
 - **API de señal:** `TelephonyCallback.SignalStrengthsListener` en Android 12+
   (`PhoneStateListener` como *fallback* en versiones anteriores).
 - **Dependencias:** `androidx.core`, `androidx.appcompat` y `com.google.android.material`.
