@@ -36,7 +36,18 @@
 
 ## 📦 Cómo instalarlo en Android
 
-### Opción A — Compilar desde el código
+La app **no está en Google Play** (se distribuye como APK). Es un *debug build* firmado
+con la clave de depuración; perfecto para uso personal.
+
+### Opción A — Instalar la APK ya compilada (la más simple)
+1. Descargá el APK: **[`dist/signalmonitor-1.0.apk`](dist/signalmonitor-1.0.apk)**
+   (desde el teléfono, abrí el repo en el navegador → entrá al archivo → **Download**).
+2. Pasalo al teléfono si lo bajaste en la PC (cable USB, Google Drive, Telegram, etc.).
+3. Abrilo con el explorador de archivos → Android pedirá habilitar
+   **"Instalar apps desconocidas"** para esa app: permitilo.
+4. Tocá **Instalar**.
+
+### Opción B — Compilar desde el código
 Requiere **JDK 17** y el **Android SDK (API 34)**.
 ```bash
 git clone git@github.com:lpapa1977/SignalMonitor.git
@@ -46,12 +57,6 @@ cd SignalMonitor
 #   app/build/outputs/apk/debug/app-debug.apk
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
-
-### Opción B — Instalar la APK en el teléfono
-1. Pasá el APK compilado al teléfono (cable USB, Google Drive, Telegram, etc.).
-2. Abrilo con el explorador de archivos → Android pedirá habilitar
-   **"Instalar apps desconocidas"** para esa app: permitilo.
-3. Tocá **Instalar**.
 
 ### Permisos que pide y por qué
 - **`READ_PHONE_STATE`** y **`ACCESS_FINE_LOCATION`** — Android exige ubicación para
