@@ -1,4 +1,4 @@
-package com.example.signalmonitor
+package com.lpapa.signalmonitor
 
 import android.Manifest
 import android.content.Intent
@@ -23,7 +23,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.example.signalmonitor.databinding.ActivityMainBinding
+import com.lpapa.signalmonitor.databinding.ActivityMainBinding
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
