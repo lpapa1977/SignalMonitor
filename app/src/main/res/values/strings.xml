@@ -6,6 +6,8 @@
     <string name="permission_required">Se necesita permiso de teléfono/ubicación para leer la señal.</string>
     <string name="no_wifi">Sin conexión WiFi</string>
     <string name="no_detail">Sin detalle disponible</string>
+    <string name="wifi_unknown_ssid">(SSID oculto — activá la ubicación)</string>
+    <string name="stats_format">mín %1$d · prom %2$d · máx %3$d dBm (n=%4$d)</string>
 
     <string name="mode_mobile">Móvil</string>
     <string name="mode_wifi">WiFi</string>

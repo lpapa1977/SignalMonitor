@@ -3,6 +3,8 @@ package com.lpapa.signalmonitor
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.wifi.ScanResult
+import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
@@ -184,7 +186,9 @@ class MainActivity : AppCompatActivity() {
         val mobile = mode == Mode.MOBILE
         val showSim = mobile && subIds.size > 1
         binding.simRow.visibility = if (showSim) android.view.View.VISIBLE else android.view.View.GONE
-        binding.detail.visibility = if (mobile) android.view.View.VISIBLE else android.view.View.GONE
+        // El detalle se usa en ambos modos (radio LTE/5G en móvil, enlace en WiFi).
+        binding.detail.visibility = android.view.View.VISIBLE
+        binding.stats.text = ""
     }
 
     // -------------------------------------------------------------- Permisos
@@ -341,31 +345,104 @@ class MainActivity : AppCompatActivity() {
             binding.dbmValue.text = getString(R.string.dbm_placeholder)
             binding.levelValue.text = ""
             binding.networkType.text = ""
+            binding.detail.text = ""
             return
         }
         val rssi = info.rssi
-        val ssid = info.ssid?.removeSurrounding("\"") ?: "?"
+        val rawSsid = info.ssid?.removeSurrounding("\"")
+        val ssid = if (rawSsid.isNullOrBlank() || rawSsid == WifiManager.UNKNOWN_SSID)
+            getString(R.string.wifi_unknown_ssid) else rawSsid
         val level = wifiLevel(rssi)
+        val detail = buildWifiDetail(info)
 
         binding.status.text = getString(R.string.listening)
         binding.dbmValue.text = getString(R.string.dbm_format, rssi)
         binding.levelValue.text = getString(R.string.level_format, level, levelLabel(level))
         binding.networkType.text = getString(R.string.wifi_ssid_format, ssid)
-        record(rssi, level, "wifi", ssid)
+        binding.detail.text = detail
+        record(rssi, level, "wifi", "$ssid · $detail")
     }
 
-    private fun wifiLevel(rssi: Int): Int = when {
-        rssi >= -55 -> 4
-        rssi >= -66 -> 3
-        rssi >= -77 -> 2
-        rssi >= -88 -> 1
-        else -> 0
+    /** Nivel WiFi 0-4 usando la calibración del sistema (con fallback por umbrales). */
+    @Suppress("DEPRECATION")
+    private fun wifiLevel(rssi: Int): Int =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            wifiManager.calculateSignalLevel(rssi).coerceIn(0, 4)
+        } else when {
+            rssi >= -55 -> 4
+            rssi >= -66 -> 3
+            rssi >= -77 -> 2
+            rssi >= -88 -> 1
+            else -> 0
+        }
+
+    /**
+     * Detalle rico del enlace WiFi: banda + canal, velocidad Tx/Rx, estándar y BSSID.
+     * Todo proviene del WifiInfo de la conexión actual.
+     */
+    private fun buildWifiDetail(info: WifiInfo): String {
+        val parts = ArrayList<String>()
+
+        val freq = info.frequency // MHz
+        val band = bandOf(freq)
+        val channel = channelOf(freq)
+        if (band != null) {
+            parts += if (channel != null) "$band · canal $channel" else band
+        }
+
+        // Velocidad de enlace negociada (rx/tx disponibles desde API 29 = minSdk).
+        val rx = info.rxLinkSpeedMbps
+        val tx = info.txLinkSpeedMbps
+        when {
+            rx > 0 && tx > 0 -> parts += "$rx↓/$tx↑ Mbps"
+            info.linkSpeed > 0 -> parts += "${info.linkSpeed} Mbps"
+        }
+
+        wifiStandardName(info)?.let { parts += it }
+
+        info.bssid?.let { if (it != "02:00:00:00:00:00") parts += it }
+
+        return if (parts.isEmpty()) getString(R.string.no_detail) else parts.joinToString(" · ")
+    }
+
+    /** Banda WiFi a partir de la frecuencia central en MHz. */
+    private fun bandOf(freq: Int): String? = when (freq) {
+        in 2401..2495 -> "2,4 GHz"
+        in 5150..5895 -> "5 GHz"
+        in 5925..7125 -> "6 GHz"
+        else -> null
+    }
+
+    /** Número de canal a partir de la frecuencia central (2,4 / 5 / 6 GHz). */
+    private fun channelOf(freq: Int): Int? = when (freq) {
+        2484 -> 14
+        in 2412..2472 -> (freq - 2407) / 5
+        in 5150..5895 -> (freq - 5000) / 5
+        5935 -> 2
+        in 5955..7115 -> (freq - 5950) / 5
+        else -> null
+    }
+
+    /** Estándar WiFi legible (Wi-Fi 4/5/6/7); requiere API 30+. */
+    private fun wifiStandardName(info: WifiInfo): String? {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return null
+        return when (info.wifiStandard) {
+            ScanResult.WIFI_STANDARD_LEGACY -> "Wi-Fi a/b/g"
+            ScanResult.WIFI_STANDARD_11N -> "Wi-Fi 4"
+            ScanResult.WIFI_STANDARD_11AC -> "Wi-Fi 5"
+            ScanResult.WIFI_STANDARD_11AX -> "Wi-Fi 6"
+            ScanResult.WIFI_STANDARD_11BE -> "Wi-Fi 7"
+            else -> null
+        }
     }
 
     // ----------------------------------------------------------- Compartido
 
     private fun record(value: Int, level: Int, type: String, extra: String) {
         binding.graph.addValue(value, level)
+        binding.graph.stats()?.let { s ->
+            binding.stats.text = getString(R.string.stats_format, s[0], s[1], s[2], s[3])
+        }
         log.add(CsvRow(System.currentTimeMillis(), type, value, level, extra))
         if (log.size > maxLog) log.removeAt(0)
     }

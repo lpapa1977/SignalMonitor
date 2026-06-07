@@ -57,6 +57,24 @@ class GraphView @JvmOverloads constructor(
         invalidate()
     }
 
+    /**
+     * Estadísticas de la ventana visible: [mínimo, promedio, máximo, nº de muestras].
+     * Devuelve null si todavía no hay datos.
+     */
+    fun stats(): IntArray? {
+        if (points.isEmpty()) return null
+        var min = Int.MAX_VALUE
+        var max = Int.MIN_VALUE
+        var sum = 0
+        for (p in points) {
+            val v = p.value.toInt()
+            if (v < min) min = v
+            if (v > max) max = v
+            sum += v
+        }
+        return intArrayOf(min, sum / points.size, max, points.size)
+    }
+
     private fun colorFor(level: Int): Int = when (level) {
         0 -> Color.parseColor("#D32F2F") // rojo
         1 -> Color.parseColor("#F57C00") // naranja

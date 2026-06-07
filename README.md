@@ -2,8 +2,8 @@
 
 **Monitor de señal en tiempo real para Android** — mide la intensidad de la señal
 **móvil** (dBm de la portadora, con detalle LTE/5G y selección de SIM) o de **WiFi**
-(RSSI + SSID), la grafica en una línea de tiempo coloreada por calidad y permite
-**exportar las lecturas a CSV**.
+(RSSI, SSID, banda/canal, velocidad de enlace y estándar Wi-Fi), la grafica en una
+línea de tiempo coloreada por calidad y permite **exportar las lecturas a CSV**.
 
 <p align="center">
   <img src="docs/screenshots/main.png" width="30%" alt="Pantalla principal">
@@ -22,7 +22,11 @@
   - **Móvil:** dBm de la celda servidora + **nivel 0–4** (sin señal → excelente),
     tipo de red (**2G/3G/4G LTE/5G**) y detalle fino de radio:
     **RSRP · RSRQ · SINR** para LTE y **5G NR**.
-  - **WiFi:** **RSSI** en dBm, **nivel 0–4** y **SSID** de la red conectada.
+  - **WiFi:** **RSSI** en dBm, **nivel 0–4**, **SSID** y un detalle de enlace rico:
+    **banda (2,4 / 5 / 6 GHz) + canal**, **velocidad Tx/Rx en Mbps**,
+    **estándar (Wi-Fi 4/5/6/7)** y **BSSID** del punto de acceso.
+- **Estadísticas en vivo** — bajo el valor actual se muestran **mín / prom / máx**
+  de la ventana visible del gráfico.
 - **Gráfico en tiempo real** — línea que se desplaza, coloreada según la calidad de
   cada muestra.
 - **Multi-SIM** — si hay más de una SIM activa, un selector permite elegir cuál
@@ -40,7 +44,7 @@ La app **no está en Google Play** (se distribuye como APK). Es un *debug build*
 con la clave de depuración; perfecto para uso personal.
 
 ### Opción A — Instalar la APK ya compilada (la más simple)
-1. Descargá el APK: **[`dist/signalmonitor-1.1.apk`](dist/signalmonitor-1.1.apk)**
+1. Descargá el APK: **[`dist/signalmonitor-1.2.apk`](dist/signalmonitor-1.2.apk)**
    (desde el teléfono, abrí el repo en el navegador → entrá al archivo → **Download**).
 2. Pasalo al teléfono si lo bajaste en la PC (cable USB, Google Drive, Telegram, etc.).
 3. Abrilo con el explorador de archivos → Android pedirá habilitar
@@ -61,7 +65,9 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 ### Permisos que pide y por qué
 - **`READ_PHONE_STATE`** y **`ACCESS_FINE_LOCATION`** — Android exige ubicación para
   exponer los detalles de la señal móvil (RSRP/RSRQ/SINR, identidad de celda).
-- **`ACCESS_WIFI_STATE`** / **`ACCESS_NETWORK_STATE`** — leer RSSI y estado de la red WiFi.
+- **`ACCESS_WIFI_STATE`** / **`ACCESS_NETWORK_STATE`** — leer RSSI, banda/canal,
+  velocidad y estándar de la red WiFi. El **SSID** solo aparece si la **ubicación**
+  está activada (lo exige Android); si no, se muestra un aviso.
 
 No usa internet ni envía datos a ningún servidor: todo corre **en el dispositivo** y el
 CSV solo se comparte si vos tocás **Exportar CSV**.
@@ -70,7 +76,7 @@ CSV solo se comparte si vos tocás **Exportar CSV**.
 
 ## 🧰 Detalles técnicos
 - **Lenguaje:** Kotlin · **UI:** XML + View Binding · vista de gráfico propia (`GraphView`).
-- **minSdk 29** · **targetSdk 34** · `applicationId = com.lpapa.signalmonitor` · versión 1.1.
+- **minSdk 29** · **targetSdk 34** · `applicationId = com.lpapa.signalmonitor` · versión 1.2.
 - **API de señal:** `TelephonyCallback.SignalStrengthsListener` en Android 12+
   (`PhoneStateListener` como *fallback* en versiones anteriores).
 - **Dependencias:** `androidx.core`, `androidx.appcompat` y `com.google.android.material`.
